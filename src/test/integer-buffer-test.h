@@ -1,0 +1,1 @@
+void integer_buffer_test();
