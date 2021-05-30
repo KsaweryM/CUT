@@ -2,39 +2,15 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
-#include "../string-buffer.h"
-#include "string-buffer-test.h"
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include "../string-buffer.h"
+#include "string-buffer-test.h"
 
-static void random_string(char *str, const int str_length) {
-    for (int i = 0; i < str_length - 1; ++i) {
-        str[i] = (char) ((rand() % ('Z' - 'A' + 1)) + 'A');
-    }
-
-    str[str_length - 1] = 0;
-}
-
-char** string_array(const int length, const int string_length) {
-    char** data =  malloc(sizeof(*data) * length);
-
-       for (int i = 0; i < length; ++i) {
-        data[i] = malloc(sizeof(*data[i]) * string_length);
-    }
-
-    return data;
-}
-
-char** random_string_array(const int length, const int string_length) {
-    char** data = string_array(length, string_length);
-
-    for (int i = 0; i < length; ++i) {
-        random_string(data[i], string_length);
-    }
-
-    return data;
-}
+void random_string(char *str, const int str_length);
+char** string_array(const int length, const int string_length);
+char** random_string_array(const int length, const int string_length);
 
 typedef struct thread_input {
     int data_length;
@@ -107,4 +83,32 @@ void string_buffer_test() {
     free(output);
 
     string_buffer_destroy(buffer);
+}
+
+void random_string(char *str, const int str_length) {
+    for (int i = 0; i < str_length - 1; ++i) {
+        str[i] = (char) ((rand() % ('Z' - 'A' + 1)) + 'A');
+    }
+
+    str[str_length - 1] = 0;
+}
+
+char** string_array(const int length, const int string_length) {
+    char** data =  malloc(sizeof(*data) * length);
+
+       for (int i = 0; i < length; ++i) {
+        data[i] = malloc(sizeof(*data[i]) * string_length);
+    }
+
+    return data;
+}
+
+char** random_string_array(const int length, const int string_length) {
+    char** data = string_array(length, string_length);
+
+    for (int i = 0; i < length; ++i) {
+        random_string(data[i], string_length);
+    }
+
+    return data;
 }
