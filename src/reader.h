@@ -7,7 +7,7 @@
 
 typedef struct reader reader;
 
-reader* reader_create(string_buffer* output, string_buffer* logger_buffer, watchdog_box* box, atomic_int* program_exit);
+reader* reader_create(string_buffer* output, string_buffer* logger_buffer, watchdog_box* box);
 
 void reader_send_exit_signal(reader* reader_object);
 

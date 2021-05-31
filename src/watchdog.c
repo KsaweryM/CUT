@@ -34,21 +34,20 @@ void* thread_watchdog(void* args) {
         }
     }
 
-    printf("watchdog exit\n");
 
-    *watchdog_object->program_exit = 1;
+    
+    printf("watchdog exit\n");
 
     return 0;
 }
 
-watchdog* watchdog_create(size_t box_length, watchdog_box* box[], atomic_int* program_exit) {
+watchdog* watchdog_create(size_t box_length, watchdog_box* box[]) {
     watchdog* watchdog_object = malloc(sizeof(*watchdog_object) + sizeof(watchdog_box*) * box_length);
 
     memcpy(watchdog_object->box, box, sizeof(watchdog_box*) * box_length);
     watchdog_object->exit = 0;
     watchdog_object->box_length = box_length;
-    watchdog_object->program_exit = program_exit;
-
+    
    pthread_create(&watchdog_object->id, NULL, &thread_watchdog, watchdog_object);
 
     return watchdog_object;

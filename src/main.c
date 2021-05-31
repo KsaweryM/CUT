@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <signal.h>
-#include "test/tests.h"
 #include "reader.h"
 #include "watchdog.h"
 #include "watchdog-box.h"
@@ -15,6 +14,10 @@
 
 watchdog* watchdog_object = 0;
 
+/*
+* When the program receives the SIGTERM signal, it starts to terminates threads.
+* The first one to terminate is watchdog thread.
+*/
 void signal_handler() {
     if (watchdog_object) {
         watchdog_send_exit_signal(watchdog_object);
@@ -23,37 +26,68 @@ void signal_handler() {
 
 int main() {
     signal(SIGTERM, signal_handler); 
-    signal(SIGINT, signal_handler); 
 
     register const int reader_analyzer_buffer_capacity = 10;
     register const int logger_buffer_capacity = 20;
     register const int integer_bufer_capacity = 30;
 
+    /*
+    * Creating buffers. Buffers are used to communication between threads.
+    */
     string_buffer* reader_analyzer_buffer = string_buffer_create(reader_analyzer_buffer_capacity);
     string_buffer* logger_buffer = string_buffer_create(logger_buffer_capacity);
     integer_buffer* analyzer_printer_buffer = integer_buffer_create(integer_bufer_capacity);
 
+    /*
+    * Creating watchdog_boxes. Every thread must inform watchdog thread abouts its activity. 
+    * To inform watchdog about thread activity, every thread must execute watchdog_box_click(watchdog_box) at least every 2 seconds.
+    */
     watchdog_box* reader_box = watchdog_box_create();
     watchdog_box* analyzer_box = watchdog_box_create();
     watchdog_box* printer_box = watchdog_box_create();
     watchdog_box* logger_box = watchdog_box_create();
  
+    /*
+    * Array of pointers to watchdog_boxes is a one of the argument of watchdog thread. 
+    * For every 2 seconds watchdogs checks if there was a activity on every watchdog_boxes. 
+    * If there was no activity on one of the boxes, watchdog abort the program. 
+    */
     watchdog_box* boxes[] = {reader_box, analyzer_box, printer_box, logger_box};
     int boxes_length = sizeof(boxes) / sizeof(boxes[0]);
-    
-    atomic_int program_exit = 0;
 
-    reader* reader_object = reader_create(reader_analyzer_buffer, logger_buffer, reader_box, &program_exit);
+    /*
+    * Creating threads. 
+    */
+    reader* reader_object = reader_create(reader_analyzer_buffer, logger_buffer, reader_box);
     analyzer* analyzer_objet = analyzer_create(reader_analyzer_buffer, analyzer_printer_buffer, logger_buffer, analyzer_box);
     printer* printer_object = printer_create(analyzer_printer_buffer, logger_buffer, printer_box);
     logger* logger_object = logger_create(logger_buffer, logger_box, "logger file");    
-    watchdog_object = watchdog_create(boxes_length, boxes, &program_exit);
+    
+    /*
+    * Pointer to watchdog_object must be a global variable, because it is argument to signal handler.
+    */
+    watchdog_object = watchdog_create(boxes_length, boxes);
+
+    /*
+    * By signals handling user can terminate the program. Each thread must be correctly terminated.
+    * This must be done in the correct order. The first thread to terminate is watchdog.
+    */
+    watchdog_join(watchdog_object);
+    
+    /*
+    * The next thread to terminate is reader. Reader sends information about termination to analyzer thread by buffer. 
+    * Analyzer thread does the same for printer thread and printer thread informs logger thread.
+    */
+    reader_send_exit_signal(reader_object);
 
     reader_join(reader_object);
     analyzer_join(analyzer_objet);
     printer_join(printer_object);
     logger_join(logger_object);
-    watchdog_join(watchdog_object);
+
+    /*
+    * In the following lines program deallocates memory.
+    */
 
     reader_destroy(reader_object);
     analyzer_destroy(analyzer_objet);
