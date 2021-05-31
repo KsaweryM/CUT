@@ -1,2 +1,0 @@
-void watchdog_test();
-
