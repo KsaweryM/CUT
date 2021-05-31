@@ -1,5 +1,6 @@
 #include "watchdog-box.h"
 #include <pthread.h>
+#include <stdlib.h>
 
 struct watchdog_box {
     pthread_mutex_t mutex;
@@ -12,6 +13,8 @@ watchdog_box* watchdog_box_create() {
     pthread_mutex_init(&box->mutex, NULL);
 
     box->click = 0;
+
+    return box;
 }
 
 void watchdog_box_click(watchdog_box* box) {

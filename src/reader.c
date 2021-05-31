@@ -22,6 +22,7 @@ int cpu_count();
 void *thread_reader(void * args) {
     reader* reader_object = (reader*) args;
     string_buffer* buffer = reader_object->str_buffer;
+    string_buffer* logger_buffer = reader_object->logger_buffer;
 
     register const int data_max_length = 256;
     char data[data_max_length];
@@ -32,8 +33,8 @@ void *thread_reader(void * args) {
     string_buffer_write(buffer, data);
 
     while (!*reader_object->exit) {
+        string_buffer_write(logger_buffer, "Reader reads the file");
         FILE *file = fopen("/proc/stat", "r");
-
         fgets(data, data_max_length, file);
 
         for (int i = 0; i < cpus; i++) {
@@ -53,12 +54,13 @@ void *thread_reader(void * args) {
     return 0;
 }
 
-reader* reader_create(string_buffer* output, watchdog_box* box, atomic_int* program_exit) {
+reader* reader_create(string_buffer* output, string_buffer* logger_buffer, watchdog_box* box, atomic_int* program_exit) {
     reader* reader_object = malloc(sizeof(*reader_object));
 
     reader_object->exit = program_exit;
     reader_object->id = 0;
     reader_object->str_buffer = output;
+    reader_object->logger_buffer = logger_buffer;
     reader_object->box = box;
 
     pthread_create(&reader_object->id, NULL, &thread_reader, reader_object);
