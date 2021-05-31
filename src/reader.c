@@ -3,14 +3,16 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "reader.h"
 #include <string.h>
+#include "reader.h"
 
 struct reader {
     atomic_int exit;
     
     string_buffer* str_buffer;
     string_buffer* logger_buffer;
+
+    watchdog_box* box;
     
     pthread_t id;
 };
@@ -40,6 +42,8 @@ void *thread_reader(void * args) {
         }
 
         fclose(file);
+        
+        watchdog_box_click(reader_object->box);
         sleep(1);
     }
 
@@ -48,12 +52,13 @@ void *thread_reader(void * args) {
     return 0;
 }
 
-reader* reader_create(string_buffer* output) {
+reader* reader_create(string_buffer* output, watchdog_box* box) {
     reader* reader_object = malloc(sizeof(*reader_object));
 
     reader_object->exit = 0;
     reader_object->id = 0;
     reader_object->str_buffer = output;
+    reader_object->box = box;
 
     pthread_create(&reader_object->id, NULL, &thread_reader, reader_object);
 

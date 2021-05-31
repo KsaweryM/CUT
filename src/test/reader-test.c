@@ -26,6 +26,7 @@ void* create_receiver(void* args) {
 }
 
 void reader_test() {
+    /*
     string_buffer* buffer = string_buffer_create(5);
     pthread_t receiver_id;
 
@@ -39,6 +40,5 @@ void reader_test() {
 
     string_buffer_destroy(buffer);
     reader_destroy(reader_object);
-
-    
+    */
 }

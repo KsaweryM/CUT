@@ -36,7 +36,7 @@ void watchdog_test() {
     pthread_create(&id2, NULL, &responding_thread, box2);
 
     watchdog_box* watchdog_input[] = {box1, box2};
-    watchdog* watchdog_object = create_watchdog(2, watchdog_input);
+    watchdog* watchdog_object = watchdog_create(2, watchdog_input);
 
     watchdog_join(watchdog_object);
 }

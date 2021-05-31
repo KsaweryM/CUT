@@ -36,7 +36,7 @@ void* thread_watchdog(void* args) {
     return 0;
 }
 
-watchdog* create_watchdog(size_t box_length, watchdog_box* box[]) {
+watchdog* watchdog_create(size_t box_length, watchdog_box* box[]) {
     watchdog* watchdog_object = malloc(sizeof(*watchdog_object) + sizeof(watchdog_box*) * box_length);
 
     memcpy(watchdog_object->box, box, sizeof(watchdog_box*) * box_length);

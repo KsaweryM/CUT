@@ -2,10 +2,11 @@
 #define __READER_H__
 
 #include "string-buffer.h"
+#include "watchdog-box.h"
 
 typedef struct reader reader;
 
-reader* reader_create(string_buffer* output);
+reader* reader_create(string_buffer* output, watchdog_box* box);
 
 void reader_send_exit_signal(reader* reader_object);
 
