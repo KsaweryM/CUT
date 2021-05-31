@@ -1,0 +1,15 @@
+#ifndef __LOGGER_H__
+#define __LOGGER_H__
+
+#include "string-buffer.h"
+#include "watchdog-box.h"
+
+typedef struct logger logger;
+
+logger* logger_create(string_buffer* input, watchdog_box* box, const char file_name[]);
+
+void logger_join(logger* logger_object);
+
+void logger_destroy(logger* loger_object);
+
+#endif

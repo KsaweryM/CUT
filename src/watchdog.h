@@ -7,7 +7,7 @@
 
 typedef struct watchdog watchdog;
 
-watchdog* watchdog_create(size_t box_length, watchdog_box* box[]);
+watchdog* watchdog_create(size_t box_length, watchdog_box* box[], atomic_int* program_exit);
 
 void watchdog_send_exit_signal(watchdog* watchdog_object);
 

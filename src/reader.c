@@ -7,7 +7,7 @@
 #include "reader.h"
 
 struct reader {
-    atomic_int exit;
+    atomic_int* exit;
     
     string_buffer* str_buffer;
     string_buffer* logger_buffer;
@@ -31,7 +31,7 @@ void *thread_reader(void * args) {
 
     string_buffer_write(buffer, data);
 
-    while (!reader_object->exit) {
+    while (!*reader_object->exit) {
         FILE *file = fopen("/proc/stat", "r");
 
         fgets(data, data_max_length, file);
@@ -48,14 +48,15 @@ void *thread_reader(void * args) {
     }
 
     string_buffer_write(reader_object->str_buffer, "exit");
-
+    
+    printf("reader exit\n");
     return 0;
 }
 
-reader* reader_create(string_buffer* output, watchdog_box* box) {
+reader* reader_create(string_buffer* output, watchdog_box* box, atomic_int* program_exit) {
     reader* reader_object = malloc(sizeof(*reader_object));
 
-    reader_object->exit = 0;
+    reader_object->exit = program_exit;
     reader_object->id = 0;
     reader_object->str_buffer = output;
     reader_object->box = box;
@@ -70,7 +71,7 @@ void reader_destroy(reader* reader) {
 }
 
 void reader_send_exit_signal(reader* reader_object) {
-    reader_object->exit = 1;
+    *reader_object->exit = 1;
 }
 
 void reader_join(reader* reader_object) {
