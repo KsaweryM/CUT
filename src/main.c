@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <signal.h>
+#include <stdlib.h>
+#include <stdatomic.h>
+#include <string.h>
+#include <pthread.h>
 #include "reader.h"
 #include "watchdog.h"
 #include "watchdog-box.h"
 #include "string-buffer.h"
-#include <string.h>
-#include <pthread.h>
 #include "logger.h"
-#include <stdlib.h>
-#include <stdatomic.h>
 #include "analyzer.h"
 #include "printer.h"
 
