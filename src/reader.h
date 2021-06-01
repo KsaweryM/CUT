@@ -6,9 +6,9 @@
 #include <stdatomic.h>
 
 /*
-* Reader is a thread that reads from /proc/stat file information about processors and send it to analyzer_buffer.
+* Reader is a thread that reads from /proc/stat file information about processors and sends it to analyzer_buffer.
 * At the beginning reader counts how many processors there are in the computer. Let's assume that there are N processors. 
-* Reader in the loop opens proc/stat file, avoids the first line, reads next N lines and send them to output buffer, close file. 
+* Reader in the loop opens proc/stat file, avoids the first line, reads next N lines and sends them to output buffer, close file. 
 */
 typedef struct reader reader;
 
