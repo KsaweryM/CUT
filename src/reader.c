@@ -19,7 +19,7 @@ struct reader {
     // Buffor for communication with the logger thread.
     string_buffer* logger_buffer;
 
-    // Reader uses watchdog_box object to informs watchdog about itself activity. 
+    // Reader thread uses watchdog_box object to informs watchdog thread about itself activity. 
     watchdog_box* box;
     
     // id of reader thread
