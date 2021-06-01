@@ -8,7 +8,9 @@
 /*
 * Reader is a thread that read from /proc/stat file information about processors and send it to analyzer_buffer.
 * At the beginning reader counts how many processors there are in the computer. Let's assume that there are N processors. 
-* Reader in the loop opens proc/stat file, avoids the first line, reads next N lines and send them to output buffer, close file. 
+* Reader thread in the loop opens proc/stat file, avoids the first line, reads next N lines and send them to output buffer, close file. 
+* 
+* Reader thread also informs watchdog thread about itself activity and sends logs info to logger thread. 
 */
 typedef struct reader reader;
 

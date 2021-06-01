@@ -66,7 +66,7 @@ void *thread_reader(void * args) {
         fgets(data, data_max_length, file);
 
         // Reader thread sends information about processors state to analyzer thread.
-        for (int i = 0; i < cpus; i++) {
+        for (size_t i = 0; i < cpus; i++) {
             fgets(data, data_max_length, file);
             string_buffer_write(analyzer_buffer, data);
         }
