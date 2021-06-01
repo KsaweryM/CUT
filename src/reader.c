@@ -22,7 +22,7 @@ struct reader {
     // Reader thread uses watchdog_box object to informs watchdog thread about itself activity. 
     watchdog_box* box;
     
-    // id of reader thread
+    // Id of reader thread.
     pthread_t id;
 };
 
@@ -40,6 +40,7 @@ void *thread_reader(void * args) {
 
     string_buffer* analyzer_buffer = reader_object->analyzer_buffer;
     string_buffer* logger_buffer = reader_object->logger_buffer;
+    watchdog_box* box = reader_object->box;
 
     register const size_t data_max_length = 256;
     // data array contains data from /proc/stat file
@@ -74,7 +75,7 @@ void *thread_reader(void * args) {
         fclose(file);
         
         // Reader thread informs watchdog thread about its activity.
-        watchdog_box_click(reader_object->box);
+        watchdog_box_click(box);
 
         sleep(1);
     }

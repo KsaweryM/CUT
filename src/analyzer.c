@@ -11,9 +11,13 @@ typedef struct cpu_data {
 
 struct analyzer {
     string_buffer* input;
+    
     integer_buffer* output;
+    
     string_buffer* logger_buffer;
+    
     watchdog_box* box;
+    
     pthread_t id;
 };
 
