@@ -19,7 +19,7 @@ struct logger {
     pthread_t id;
 
     // Name of the file to which logger thread saves data.
-    const char file_name[];
+    char file_name[];
 };
 
 /*

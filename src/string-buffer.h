@@ -12,7 +12,7 @@ typedef struct string_buffer string_buffer;
 *   length: how many strings string_buffer can store.
 *   return: pointer to created string_buffer.
 */
-string_buffer* string_buffer_create(size_t length);
+string_buffer* string_buffer_create(const size_t words_count, const size_t word_length);
 
 /*
 *   A method to destroy string_buffer.
@@ -23,7 +23,7 @@ void string_buffer_destroy(string_buffer* buffer);
 *   A method to insert value into string_buffer.
 *   Calling this method blocks a thread as long as string_buffer is full.
 */
-void string_buffer_write(string_buffer* buffer, const char data[]);
+size_t string_buffer_write(string_buffer* buffer, const char data[]);
 
 /*
 *   Save oldest value from string_buffer and remove it from string_buffer.

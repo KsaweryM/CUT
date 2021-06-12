@@ -26,16 +26,18 @@ void signal_handler() {
 
 int main() {
     signal(SIGTERM, signal_handler); 
-
-    register const int reader_analyzer_buffer_capacity = 10;
-    register const int logger_buffer_capacity = 20;
-    register const int integer_bufer_capacity = 30;
-
+    signal(SIGINT, signal_handler); 
+    register const size_t reader_analyzer_buffer_capacity = 10;
+    register const size_t logger_buffer_capacity = 20;
+    register const size_t integer_bufer_capacity = 30;
+    register const size_t word_length = 512;
+   
     /*
     * Creating buffers. Buffers are used to communication between threads.
     */
-    string_buffer* reader_analyzer_buffer = string_buffer_create(reader_analyzer_buffer_capacity);
-    string_buffer* logger_buffer = string_buffer_create(logger_buffer_capacity);
+
+    string_buffer* reader_analyzer_buffer = string_buffer_create(reader_analyzer_buffer_capacity, word_length);
+    string_buffer* logger_buffer = string_buffer_create(logger_buffer_capacity, word_length);
     integer_buffer* analyzer_printer_buffer = integer_buffer_create(integer_bufer_capacity);
 
     /*
