@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 struct watchdog {
-    atomic_int exit;
+    volatile atomic_int exit;
     atomic_int* program_exit;
     pthread_t id;
     size_t box_length;
