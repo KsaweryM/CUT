@@ -107,12 +107,12 @@ void* analyzer_thread(void* args) {
     }
 }
 
-analyzer* analyzer_create(string_buffer* input, integer_buffer* output, string_buffer* logger_buffer, watchdog_box* box) {
+analyzer* analyzer_create(string_buffer* restrict reader_buffer, string_buffer* restrict logger_buffer, integer_buffer* printer_buffer,  watchdog_box* box) {
     analyzer* analyzer_object = malloc(sizeof(*analyzer_object));
 
-    analyzer_object->input = input;
-    analyzer_object->output = output;
+    analyzer_object->input = reader_buffer;
     analyzer_object->logger_buffer = logger_buffer;
+    analyzer_object->output = printer_buffer;
     analyzer_object->box = box;
 
     pthread_create(&analyzer_object->id, NULL, &analyzer_thread, analyzer_object);

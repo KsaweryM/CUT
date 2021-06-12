@@ -14,9 +14,9 @@ struct reader {
     // Set exit value to 1 to exit reader threat. To set this value use "reader_send_exit_signal" method.
     atomic_int exit;
     
-    // Buffor for communication with the analyzer thread.
+    // Buffer for communication with the analyzer thread.
     string_buffer* analyzer_buffer;
-    // Buffor for communication with the logger thread.
+    // Buffer for communication with the logger thread.
     string_buffer* logger_buffer;
 
     // Reader thread uses watchdog_box object to informs watchdog thread about itself activity. 
@@ -66,7 +66,7 @@ void *thread_reader(void * args) {
 
         fgets(data, data_max_length, file);
 
-        // Reader thread sends information about processors state to analyzer thread.
+        // Reader thread sends information about states of processors to analyzer thread.
         for (size_t i = 0; i < cpus; i++) {
             fgets(data, data_max_length, file);
             string_buffer_write(analyzer_buffer, data);
@@ -88,7 +88,7 @@ void *thread_reader(void * args) {
     return 0;
 }
 
-reader* reader_create(string_buffer* analyzer_buffer, string_buffer* logger_buffer, watchdog_box* box) {
+reader* reader_create(string_buffer* restrict analyzer_buffer, string_buffer* restrict logger_buffer, watchdog_box* box) {
     reader* reader_object = malloc(sizeof(*reader_object));
     assert(reader_object);
 

@@ -61,7 +61,7 @@ int main() {
     * Creating threads. 
     */
     reader* reader_object = reader_create(reader_analyzer_buffer, logger_buffer, reader_box);
-    analyzer* analyzer_objet = analyzer_create(reader_analyzer_buffer, analyzer_printer_buffer, logger_buffer, analyzer_box);
+    analyzer* analyzer_objet = analyzer_create(reader_analyzer_buffer, logger_buffer, analyzer_printer_buffer, analyzer_box);
     printer* printer_object = printer_create(analyzer_printer_buffer, logger_buffer, printer_box);
     logger* logger_object = logger_create(logger_buffer, logger_box, "logger file");    
     
