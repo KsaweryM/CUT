@@ -6,7 +6,6 @@
 #include <string.h>
 #include <stdio.h>
 
-
 struct watchdog {
     atomic_int exit;
     atomic_int* program_exit;
@@ -33,9 +32,7 @@ void* thread_watchdog(void* args) {
             }
         }
     }
-
-
-    
+   
     printf("watchdog exit\n");
 
     return 0;

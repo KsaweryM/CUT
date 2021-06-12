@@ -4,7 +4,6 @@
 #include "watchdog-box.h"
 #include <stdlib.h>
 #include "string.h"
-
 /*
 * struct logger contains the most important data of logger thread.
 */

@@ -27,6 +27,7 @@ void signal_handler() {
 int main() {
     signal(SIGTERM, signal_handler); 
     signal(SIGINT, signal_handler); 
+    
     register const size_t reader_analyzer_buffer_capacity = 10;
     register const size_t logger_buffer_capacity = 20;
     register const size_t integer_bufer_capacity = 30;
@@ -35,7 +36,6 @@ int main() {
     /*
     * Creating buffers. Buffers are used to communication between threads.
     */
-
     string_buffer* reader_analyzer_buffer = string_buffer_create(reader_analyzer_buffer_capacity, word_length);
     string_buffer* logger_buffer = string_buffer_create(logger_buffer_capacity, word_length);
     integer_buffer* analyzer_printer_buffer = integer_buffer_create(integer_bufer_capacity);
@@ -90,7 +90,6 @@ int main() {
     /*
     * In the following lines program deallocates memory.
     */
-
     reader_destroy(reader_object);
     analyzer_destroy(analyzer_objet);
     printer_destroy(printer_object);
