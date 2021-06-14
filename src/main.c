@@ -11,22 +11,18 @@
 #include "logger.h"
 #include "analyzer.h"
 #include "printer.h"
-
-watchdog* watchdog_object = 0;
+#include <unistd.h>
+#include "signal-handler.h"
 
 /*
 * When the program receives the SIGTERM signal, it starts to terminates threads.
 * The first one to terminate is watchdog thread.
 */
-void signal_handler() {
-    if (watchdog_object) {
-        watchdog_send_exit_signal(watchdog_object);
-    }
-}
-
 int main() {
-    signal(SIGTERM, signal_handler); 
-    signal(SIGINT, signal_handler); 
+    struct sigaction action = signal_handler_create();
+
+    //signal(SIGTERM, signal_handler); 
+    //signal(SIGINT, signal_handler); 
     
     register const size_t reader_analyzer_buffer_capacity = 10;
     register const size_t logger_buffer_capacity = 20;
@@ -55,7 +51,7 @@ int main() {
     * If there was no activity on one of the boxes, watchdog abort the program. 
     */
     watchdog_box* boxes[] = {reader_box, analyzer_box, printer_box, logger_box};
-    int boxes_length = sizeof(boxes) / sizeof(boxes[0]);
+    size_t boxes_length = sizeof(boxes) / sizeof(boxes[0]);
 
     /*
     * Creating threads. 
@@ -64,15 +60,10 @@ int main() {
     analyzer* analyzer_objet = analyzer_create(reader_analyzer_buffer, logger_buffer, analyzer_printer_buffer, analyzer_box);
     printer* printer_object = printer_create(analyzer_printer_buffer, logger_buffer, printer_box);
     logger* logger_object = logger_create(logger_buffer, logger_box, "logger file");    
-    
-    /*
-    * Pointer to watchdog_object must be a global variable, because it is argument to signal handler.
-    */
-    watchdog_object = watchdog_create(boxes_length, boxes);
+    watchdog* watchdog_object = watchdog_create(boxes_length, boxes);
 
     /*
     * By signals handling user can terminate the program. Each thread must be correctly terminated.
-    * This must be done in the correct order. The first thread to terminate is watchdog.
     */
     watchdog_join(watchdog_object);
     

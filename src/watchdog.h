@@ -1,5 +1,5 @@
-#ifndef __WATCHDOG_H__
-#define __WATCHDOG_H__
+#ifndef WATCHDOG_H
+#define WATCHDOG_H
 
 #include "integer-buffer.h"
 #include "watchdog-box.h"
@@ -31,4 +31,4 @@ void watchdog_join(watchdog* watchdog_object);
 
 void watchdog_destroy(watchdog* watchdog_object);
 
-#endif //__WATCHDOG_H__
+#endif 

@@ -1,5 +1,5 @@
-#ifndef __ANALYZER_H__
-#define __ANALYZER_H__
+#ifndef ANALYZER_H
+#define ANALYZER_H
 
 #include "string-buffer.h"
 #include "integer-buffer.h"

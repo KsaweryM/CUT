@@ -73,5 +73,3 @@ size_t string_buffer_read(string_buffer* buffer, char* data, size_t available_sp
 
     return size;
 }
-
-

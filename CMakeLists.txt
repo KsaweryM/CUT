@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18.4)
 project(CUT C)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS -pthread)
-add_compile_options(-Wall -Wextra)
-add_executable(CUT src/main.c src/integer-buffer.c src/string-buffer.c src/printer.c src/reader.c src/watchdog.c src/logger.c src/analyzer.c src/watchdog-box.c)
+add_compile_options( -Weverything)
+add_executable(CUT src/main.c src/signal-handler.c src/integer-buffer.c src/string-buffer.c src/printer.c src/reader.c src/watchdog.c src/logger.c src/analyzer.c src/watchdog-box.c)

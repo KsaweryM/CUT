@@ -23,6 +23,8 @@ struct printer {
 * Body of printer thread. Printer thread reads data from analyzer_buffer and prints them on screen.
 * Like Reader thread, printer thread also informs watchdog thread about itself activity and sends logs info to logger thread.
 */
+void* thread_printer(void* args);
+
 void* thread_printer(void* args) {
     printer* printer_object = (printer*) args;
 

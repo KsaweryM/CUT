@@ -1,5 +1,5 @@
-#ifndef __READER_H__
-#define __READER_H__
+#ifndef READER_H
+#define READER_H
 
 #include "string-buffer.h"
 #include "watchdog-box.h"

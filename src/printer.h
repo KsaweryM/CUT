@@ -1,5 +1,5 @@
-#ifndef __PRINTER_H__
-#define __PRINTER_H__
+#ifndef PRINTER_H
+#define PRINTER_H
 
 #include "integer-buffer.h"
 #include "string-buffer.h"

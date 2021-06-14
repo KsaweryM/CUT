@@ -25,6 +25,8 @@ struct logger {
 * Body of the logger thread. Logger thread reads strings from input_buffer and saves them to file.
 * Like Reader thread, logger thread also informs watchdog thread about itself activity.
 */
+void* thread_logger(void* args);
+
 void* thread_logger(void* args) {
     logger* logger_object = (logger*) args;
 

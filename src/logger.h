@@ -1,5 +1,5 @@
-#ifndef __LOGGER_H__
-#define __LOGGER_H__
+#ifndef LOGGER_H
+#define LOGGER_H
 
 #include "string-buffer.h"
 #include "watchdog-box.h"

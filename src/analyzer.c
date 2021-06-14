@@ -21,6 +21,8 @@ struct analyzer {
     pthread_t id;
 };
 
+void* analyzer_thread(void* args);
+
 void* analyzer_thread(void* args) {
     analyzer* analyzer_object = (analyzer*) args;
 
@@ -97,7 +99,7 @@ void* analyzer_thread(void* args) {
             unsigned long long int total_d = Total - Prev_total;
             unsigned long long int idle_d  = Idle - Prev_idle;
 
-            double CPU_Percentage = total_d == 0 ? 0 : (double) (total_d - idle_d) / total_d;
+            double CPU_Percentage = (total_d == 0) ? 0 : (double) (total_d - idle_d) / total_d;
 
             integer_buffer_write(output, (int) (CPU_Percentage * 100));
             string_buffer_write(analyzer_object->logger_buffer, "New CPU usage calculated");

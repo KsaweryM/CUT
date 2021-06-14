@@ -1,5 +1,5 @@
-#ifndef __STRING_BUFFER_H__
-#define __STRING_BUFFER_H__
+#ifndef STRING_BUFFER_H
+#define STRING_BUFFER_H
 
 #include <stddef.h>
 /*

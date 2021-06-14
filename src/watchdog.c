@@ -5,20 +5,24 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <signal.h>
+#include "signal-handler.h"
 
 struct watchdog {
-    volatile atomic_int exit;
+    atomic_int exit;
     atomic_int* program_exit;
     pthread_t id;
     size_t box_length;
     watchdog_box* box[];
 };
 
+void* thread_watchdog(void* args);
+
 void* thread_watchdog(void* args) {
     watchdog* watchdog_object = (watchdog*) args;
     register const int watchdog_sleep_inteveral = 2;
 
-    while (!watchdog_object->exit) {
+    while (!watchdog_object_exit) {
         sleep(watchdog_sleep_inteveral);
 
         for (size_t i = 0; i < watchdog_object->box_length; i++) {

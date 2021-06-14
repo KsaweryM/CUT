@@ -1,5 +1,5 @@
-#ifndef __INTEGER_BUFFER_H__
-#define __INTEGER_BUFFER_H__
+#ifndef INTEGER_BUFFER_H
+#define INTEGER_BUFFER_H
 
 #include <stddef.h>
 

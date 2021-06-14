@@ -29,12 +29,14 @@ struct reader {
 /*
 * Return how many CPUs there are.
 */
-size_t cpu_count();
+size_t cpu_count(void);
 
 /*
 * Body of the reader thread. Reader thread reads data from /proc/stat file and send them to analyzer thread.
 * Reader thread also informs watchdog thread about itself activity and sends logs info to logger thread. 
 */
+void *thread_reader(void * args);
+
 void *thread_reader(void * args) {
     reader* reader_object = (reader*) args;
 
