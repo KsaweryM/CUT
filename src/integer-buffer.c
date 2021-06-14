@@ -19,7 +19,7 @@ integer_buffer* integer_buffer_create(size_t length) {
 
     pthread_mutex_init(&buffer->mutex, NULL);
 
-    sem_init(&buffer->empty, 0, length);
+    sem_init(&buffer->empty, 0, (unsigned int) length);
     sem_init(&buffer->full, 0, 0);
 
     buffer->length = length;

@@ -12,7 +12,7 @@
 */
 struct reader {
     // Set exit value to 1 to exit reader threat. To set this value use "reader_send_exit_signal" method.
-    atomic_int exit;
+    volatile atomic_int exit;
     
     // Buffer for communication with the analyzer thread.
     string_buffer* analyzer_buffer;

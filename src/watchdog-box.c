@@ -4,7 +4,7 @@
 
 struct watchdog_box {
     pthread_mutex_t mutex;
-    int click;  
+    volatile int click;  
 };
 
 watchdog_box* watchdog_box_create() {

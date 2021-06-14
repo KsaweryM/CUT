@@ -9,7 +9,6 @@
 #include "signal-handler.h"
 
 struct watchdog {
-    atomic_int exit;
     atomic_int* program_exit;
     pthread_t id;
     size_t box_length;
@@ -46,16 +45,11 @@ watchdog* watchdog_create(size_t box_length, watchdog_box* box[]) {
     watchdog* watchdog_object = malloc(sizeof(*watchdog_object) + sizeof(watchdog_box*) * box_length);
 
     memcpy(watchdog_object->box, box, sizeof(watchdog_box*) * box_length);
-    watchdog_object->exit = 0;
     watchdog_object->box_length = box_length;
     
    pthread_create(&watchdog_object->id, NULL, &thread_watchdog, watchdog_object);
 
     return watchdog_object;
-}
-
-void watchdog_send_exit_signal(watchdog* watchdog_object) {
-    watchdog_object->exit = 1;
 }
 
 void watchdog_join(watchdog* watchdog_object) {

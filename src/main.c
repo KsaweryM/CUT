@@ -19,11 +19,8 @@
 * The first one to terminate is watchdog thread.
 */
 int main() {
-    struct sigaction action = signal_handler_create();
+    signal_handler_create();
 
-    //signal(SIGTERM, signal_handler); 
-    //signal(SIGINT, signal_handler); 
-    
     register const size_t reader_analyzer_buffer_capacity = 10;
     register const size_t logger_buffer_capacity = 20;
     register const size_t integer_bufer_capacity = 30;

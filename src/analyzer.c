@@ -82,7 +82,7 @@ void* analyzer_thread(void* args) {
             sscanf(data, "cpu%*d %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu", &cpus_current_data[i].user_time, &cpus_current_data[i].nice_time, &cpus_current_data[i].system_time, &cpus_current_data[i].idle_time, &cpus_current_data[i].io_wait, &cpus_current_data[i].irq, &cpus_current_data[i].soft_irq, &cpus_current_data[i].steal, &cpus_current_data[i].guest, &cpus_current_data[i].guest_nice);
         }
 
-        if (!memcmp(cpus_previous_data, cpus_current_data, sizeof(*cpus_previous_data) * cpus)) {
+        if (!memcmp(cpus_previous_data, cpus_current_data, sizeof(*cpus_previous_data) * (size_t) cpus)) {
             continue;
         }
 
@@ -99,13 +99,13 @@ void* analyzer_thread(void* args) {
             unsigned long long int total_d = Total - Prev_total;
             unsigned long long int idle_d  = Idle - Prev_idle;
 
-            double CPU_Percentage = (total_d == 0) ? 0 : (double) (total_d - idle_d) / total_d;
+            double CPU_Percentage = (total_d == 0) ? 0 : (double) (total_d - idle_d) / (double) total_d;
 
             integer_buffer_write(output, (int) (CPU_Percentage * 100));
             string_buffer_write(analyzer_object->logger_buffer, "New CPU usage calculated");
         }
 
-        memcpy(cpus_previous_data, cpus_current_data, sizeof(*cpus_previous_data) * cpus);
+        memcpy(cpus_previous_data, cpus_current_data, sizeof(*cpus_previous_data) * (size_t) cpus);
     }
 }
 
