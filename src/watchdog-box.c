@@ -4,9 +4,7 @@
 #include <stdatomic.h>
 
 struct watchdog_box {
-    pthread_mutex_t mutex;
-    char padding[4];
-    int click;  
+    volatile atomic_int click;  
 };
 
 watchdog_box* watchdog_box_create() {
@@ -16,36 +14,19 @@ watchdog_box* watchdog_box_create() {
         exit(EXIT_FAILURE);
     }
 
-    pthread_mutex_init(&box->mutex, NULL);
-
-    box->click = 0;
+    atomic_store(&box->click, 0);
 
     return box;
 }
 
 void watchdog_box_click(watchdog_box* box) {
-    pthread_mutex_lock(&box->mutex);
-
-    box->click = 1;
-
-    pthread_mutex_unlock(&box->mutex);
+    atomic_store(&box->click, 1);
 }
 
 int watchdog_box_check_click(watchdog_box* box) {
-    int click;
-
-    pthread_mutex_lock(&box->mutex);
-    // fetch and exchange
-    click = box->click;
-    box->click = 0;
-
-    pthread_mutex_unlock(&box->mutex);
-
-    return click;
+    return atomic_exchange(&box->click, 0);
 }
 
 void watchdog_box_destroy(watchdog_box* box) {
-    pthread_mutex_destroy(&box->mutex);
-
     free(box);
 }
