@@ -44,10 +44,7 @@ static void* thread_printer(void* args) {
         int cpu_usage = integer_buffer_read(analyzer_buffer);
 
         // if cpu_usage equals -1, it means that the analyzer thread finished its work and printer must to exit.
-        // zamien -1 na exit_value_int i podobnie z "exit"
-        if (cpu_usage == -1) {
-            printf("printer exit\n");
-            
+        if (cpu_usage == -1) {      
             // Printer threads asks logger thread to exit.
             string_buffer_write(logger_buffer, "exit");
             return 0;

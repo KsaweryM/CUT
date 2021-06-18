@@ -8,7 +8,6 @@
 #include <signal.h>
 #include "signal-handler.h"
 
-// wez wskaznik do tablicy box
 struct watchdog {
     pthread_t id;
     size_t box_length;
@@ -33,8 +32,6 @@ static void* thread_watchdog(void* args) {
             }
         }
     }
-   
-    printf("watchdog exit\n");
 
     return 0;
 }

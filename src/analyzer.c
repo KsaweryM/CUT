@@ -53,7 +53,6 @@ static void* analyzer_thread(void* args) {
         string_buffer_read(input, data, DATA_LENGTH);
 
         if (!strcmp(data, STRING_BUFFER_EXIT)) {
-            printf("Analyzer end");
             integer_buffer_write(output, INTEGER_BUFFER_EXIT);
 
             free(cpus_previous_data);

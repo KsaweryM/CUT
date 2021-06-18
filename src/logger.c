@@ -57,7 +57,6 @@ static void* thread_logger(void* args) {
 
     fclose(file);
 
-    printf("logger exit\n");
     return 0;
 }
 

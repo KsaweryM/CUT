@@ -88,8 +88,6 @@ static void *thread_reader(void * args) {
     // Reader thread is goint to finish its work. It must to informs analyzer thread to does the same.
     string_buffer_write(reader_object->analyzer_buffer, STRING_BUFFER_EXIT);
     
-    printf("reader exit\n");
-    
     return 0;
 }
 
