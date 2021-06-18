@@ -9,6 +9,12 @@
 #include "macros.h"
 
 /*
+* Return how many CPUs there are.
+*/
+static size_t cpu_count(void);
+
+
+/*
 * struct reader contains the most important data of reader thread.
 */
 struct reader {
@@ -28,11 +34,6 @@ struct reader {
     // Id of reader thread.
     pthread_t id;
 };
-
-/*
-* Return how many CPUs there are.
-*/
-size_t cpu_count(void);
 
 /*
 * Body of the reader thread. Reader thread reads data from /proc/stat file and send them to analyzer thread.
@@ -63,9 +64,10 @@ static void *thread_reader(void * args) {
       
         // Reader thread opens /proc/stat file and avoids first line. 
         FILE *file = fopen("/proc/stat", "r");
-        // zamiast assert inne rozwiazanie. Na przyklad EXIT
-        // malloca tez warto sprawdzac
-        assert(file);
+
+        if (!file) {
+            exit(EXIT_FAILURE);
+        }
 
         fgets(data, DATA_LENGTH, file);
 
@@ -91,7 +93,10 @@ static void *thread_reader(void * args) {
 
 reader* reader_create(string_buffer* restrict analyzer_buffer, string_buffer* restrict logger_buffer, watchdog_box* box, integer_buffer* cpus_count) {
     reader* reader_object = malloc(sizeof(*reader_object));
-    assert(reader_object);
+
+    if (!reader_object) {
+        exit(EXIT_FAILURE);
+    }
 
     atomic_store(&reader_object->exit, 0);
     reader_object->id = 0;
@@ -123,9 +128,12 @@ void reader_destroy(reader* reader_object) {
 * It counts how many lines from /proc/stat file begin with a "cpu" prefix and returns this value minus one, because 
 * "the very first <<cpu>> line aggregates the numbers in all of the other "cpuN" lines."
 */
-size_t cpu_count() {
+static size_t cpu_count() {
     FILE* file = fopen("/proc/stat", "r");
-    assert(file);
+
+    if (!file) {
+        exit(EXIT_FAILURE);
+    }
 
     char data[DATA_LENGTH];
  
@@ -140,7 +148,10 @@ size_t cpu_count() {
         }
     }
 
-    assert(cpus > 0);
+    if (!cpus) {
+        exit(EXIT_FAILURE);
+    }
+
     cpus--;
 
     fclose(file);
