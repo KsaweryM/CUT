@@ -38,7 +38,6 @@ size_t cpu_count(void);
 * Body of the reader thread. Reader thread reads data from /proc/stat file and send them to analyzer thread.
 * Reader thread also informs watchdog thread about itself activity and sends logs info to logger thread. 
 */
-
 static void *thread_reader(void * args) {
     reader* reader_object = (reader*) args;
 
@@ -86,7 +85,6 @@ static void *thread_reader(void * args) {
 
     // Reader thread is goint to finish its work. It must to informs analyzer thread to does the same.
     string_buffer_write(reader_object->analyzer_buffer, STRING_BUFFER_EXIT);
-
     
     return 0;
 }

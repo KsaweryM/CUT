@@ -8,6 +8,6 @@
  
 extern volatile sig_atomic_t watchdog_object_exit;
 
-void signal_handler_create(void);
+void signal_handler(int signum);
 
 #endif

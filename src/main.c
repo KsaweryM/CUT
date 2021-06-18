@@ -18,7 +18,10 @@
 * When the program receives the SIGTERM signal, it starts to terminates threads.
 */
 int main() {
-    signal_handler_create();
+    struct sigaction action;
+    memset(&action, 0, sizeof(struct sigaction));
+    action.sa_handler = signal_handler;
+    sigaction(SIGTERM, &action, NULL);
 
     register const size_t reader_analyzer_buffer_capacity = 10;
     register const size_t analyzer_printer_buffer_capacity = 30;
