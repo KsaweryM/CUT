@@ -4,6 +4,7 @@
 #include "string-buffer.h"
 #include "watchdog-box.h"
 #include <stdatomic.h>
+#include "integer-buffer.h"
 
 /*
 * At the beginning reader counts how many processors there are in the computer. Let's assume that there are N processors.
@@ -12,7 +13,7 @@
 */
 typedef struct reader reader;
 
-reader* reader_create(string_buffer* restrict analyzer_buffer, string_buffer* restrict logger_buffer, watchdog_box* box);
+reader* reader_create(string_buffer* restrict analyzer_buffer, string_buffer* restrict logger_buffer, watchdog_box* box, integer_buffer* cpus_count);
 
 /*
 * Execute this method to terminate reader thread. Reader will ask analyzer thread to terminate itself by analyzer_buffer. Logger thread will be asked to terminate by another thread.

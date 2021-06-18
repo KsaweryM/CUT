@@ -4,6 +4,8 @@
 #include "watchdog-box.h"
 #include <stdlib.h>
 #include "string.h"
+#include "macros.h"
+
 /*
 * struct logger contains the most important data of logger thread.
 */
@@ -25,17 +27,14 @@ struct logger {
 * Body of the logger thread. Logger thread reads strings from input_buffer and saves them to file.
 * Like Reader thread, logger thread also informs watchdog thread about itself activity.
 */
-void* thread_logger(void* args);
 
-void* thread_logger(void* args) {
+static void* thread_logger(void* args) {
     logger* logger_object = (logger*) args;
 
     string_buffer* input = logger_object->input;
     watchdog_box* box = logger_object->box;
 
-    // data array contains strings from input buffer.
-    register const size_t data_size = 255;
-    char data[data_size];
+    char data[DATA_LENGTH];
 
     // file to which logger thread saves data.
     FILE* file = fopen(logger_object->file_name, "w+");
@@ -45,10 +44,10 @@ void* thread_logger(void* args) {
         watchdog_box_click(box);
 
         // Logger thread saves strings from input buffer
-        string_buffer_read(input, data, data_size);
+        string_buffer_read(input, data, DATA_LENGTH);
 
         // data equals "exit", it means that previous threads (reader, analyzer, printer) have finished their work and logger thread must exit.
-        if (!strcmp(data, "exit")) {
+        if (!strcmp(data, STRING_BUFFER_EXIT)) {
             break;
         }
       

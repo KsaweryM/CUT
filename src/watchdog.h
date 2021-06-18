@@ -20,7 +20,7 @@ typedef struct watchdog watchdog;
 * The first two function's arguments are arrray of watchdog_box pointers and length of this array.
 * Watchdog_box object are used to inform watchdog about thread activity. Detailed description of watchdog_box is in the comment above.
 */
-watchdog* watchdog_create(size_t box_length, watchdog_box* box[]);
+watchdog* watchdog_create(size_t box_length, watchdog_box* boxes[]);
 
 void watchdog_join(watchdog* watchdog_object);
 

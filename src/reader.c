@@ -6,11 +6,13 @@
 #include <string.h>
 #include <assert.h>
 #include "reader.h"
+#include "macros.h"
 
 /*
 * struct reader contains the most important data of reader thread.
 */
 struct reader {
+    char padding[4];
     // Set exit value to 1 to exit reader threat. To set this value use "reader_send_exit_signal" method.
     volatile atomic_int exit;
     
@@ -18,6 +20,8 @@ struct reader {
     string_buffer* analyzer_buffer;
     // Buffer for communication with the logger thread.
     string_buffer* logger_buffer;
+    // Reader thread uses this buffer to tell the analyzer threaed how many CPU are. 
+    integer_buffer* cpus_count;
 
     // Reader thread uses watchdog_box object to informs watchdog thread about itself activity. 
     watchdog_box* box;
@@ -35,26 +39,23 @@ size_t cpu_count(void);
 * Body of the reader thread. Reader thread reads data from /proc/stat file and send them to analyzer thread.
 * Reader thread also informs watchdog thread about itself activity and sends logs info to logger thread. 
 */
-void *thread_reader(void * args);
 
-void *thread_reader(void * args) {
+static void *thread_reader(void * args) {
     reader* reader_object = (reader*) args;
 
     string_buffer* analyzer_buffer = reader_object->analyzer_buffer;
     string_buffer* logger_buffer = reader_object->logger_buffer;
     watchdog_box* box = reader_object->box;
+    integer_buffer* cpus_counts = reader_object->cpus_count;
 
-    register const size_t data_max_length = 256;
     // data array contains data from /proc/stat file
-    char data[data_max_length];
+    char data[DATA_LENGTH];
 
     // number of cpus
-    size_t cpus = cpu_count();
+    register const size_t cpus = cpu_count();
     
     // Reader must inform analyzer of the number of cpu.
-    // This is done by casting cpus size_t into string and sending it by string_buffer.
-    sprintf(data, "%zu", cpus);
-    string_buffer_write(analyzer_buffer, data);
+    integer_buffer_write(cpus_counts, (int) cpus);
 
     // Reader thread is working until another thread ask it to stop. 
     // This can be done by executing "reader_send_exit_signal" method on right reader object.
@@ -64,13 +65,15 @@ void *thread_reader(void * args) {
       
         // Reader thread opens /proc/stat file and avoids first line. 
         FILE *file = fopen("/proc/stat", "r");
+        // zamiast assert inne rozwiazanie. Na przyklad EXIT
+        // malloca tez warto sprawdzac
         assert(file);
 
-        fgets(data, data_max_length, file);
+        fgets(data, DATA_LENGTH, file);
 
         // Reader thread sends information about states of processors to analyzer thread.
         for (size_t i = 0; i < cpus; i++) {
-            fgets(data, data_max_length, file);
+            fgets(data, DATA_LENGTH, file);
             string_buffer_write(analyzer_buffer, data);
         }
 
@@ -78,19 +81,19 @@ void *thread_reader(void * args) {
         
         // Reader thread informs watchdog thread about its activity.
         watchdog_box_click(box);
-
+        
         sleep(1);
     }
 
     // Reader thread is goint to finish its work. It must to informs analyzer thread to does the same.
-    string_buffer_write(reader_object->analyzer_buffer, "exit");
+    string_buffer_write(reader_object->analyzer_buffer, STRING_BUFFER_EXIT);
     
     printf("reader exit\n");
     
     return 0;
 }
 
-reader* reader_create(string_buffer* restrict analyzer_buffer, string_buffer* restrict logger_buffer, watchdog_box* box) {
+reader* reader_create(string_buffer* restrict analyzer_buffer, string_buffer* restrict logger_buffer, watchdog_box* box, integer_buffer* cpus_count) {
     reader* reader_object = malloc(sizeof(*reader_object));
     assert(reader_object);
 
@@ -99,6 +102,7 @@ reader* reader_create(string_buffer* restrict analyzer_buffer, string_buffer* re
     reader_object->analyzer_buffer = analyzer_buffer;
     reader_object->logger_buffer = logger_buffer;
     reader_object->box = box;
+    reader_object->cpus_count = cpus_count;
 
     pthread_create(&reader_object->id, NULL, &thread_reader, reader_object);
 
@@ -127,12 +131,11 @@ size_t cpu_count() {
     FILE* file = fopen("/proc/stat", "r");
     assert(file);
 
-    register const size_t data_max_length = 256;
-    char data[data_max_length];
+    char data[DATA_LENGTH];
  
     size_t cpus = 0;
 
-    while (fgets(data, data_max_length, file)) {
+    while (fgets(data, DATA_LENGTH, file)) {
         if (!strncmp(data, "cpu", 3)) {
             cpus++;
         }

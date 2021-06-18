@@ -12,7 +12,7 @@
 */
 typedef struct analyzer analyzer;
 
-analyzer* analyzer_create(string_buffer* restrict reader_buffer, string_buffer* restrict logger_buffer, integer_buffer* printer_buffer,  watchdog_box* box);
+analyzer* analyzer_create(string_buffer* restrict reader_buffer, string_buffer* restrict logger_buffer, integer_buffer* printer_buffer,  watchdog_box* box, integer_buffer* cpus_count);
 
 void analyzer_destroy(analyzer* analyzer_object);
 

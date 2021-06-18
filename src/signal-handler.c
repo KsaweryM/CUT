@@ -1,9 +1,11 @@
 #include "signal-handler.h"
+#include "macros.h"
 
 volatile sig_atomic_t watchdog_object_exit = 0;
 
 static void signal_handler(int signum) {
     watchdog_object_exit = 1;
+    UNUSED(signum);
 }
 
 void signal_handler_create(void) {

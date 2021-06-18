@@ -16,26 +16,32 @@
 
 /*
 * When the program receives the SIGTERM signal, it starts to terminates threads.
-* The first one to terminate is watchdog thread.
 */
 int main() {
     signal_handler_create();
 
     register const size_t reader_analyzer_buffer_capacity = 10;
+    register const size_t analyzer_printer_buffer_capacity = 30;
     register const size_t logger_buffer_capacity = 20;
-    register const size_t integer_bufer_capacity = 30;
+
     register const size_t word_length = 512;
-   
+    register const size_t cpus_count_buffer_capacity = 1;
+
     /*
     * Creating buffers. Buffers are used to communication between threads.
     */
     string_buffer* reader_analyzer_buffer = string_buffer_create(reader_analyzer_buffer_capacity, word_length);
+    integer_buffer* analyzer_printer_buffer = integer_buffer_create(analyzer_printer_buffer_capacity);
     string_buffer* logger_buffer = string_buffer_create(logger_buffer_capacity, word_length);
-    integer_buffer* analyzer_printer_buffer = integer_buffer_create(integer_bufer_capacity);
+
+    /*
+    * Reader thread uses this buffer to tell the analyzer threaed how many CPU are. 
+    */
+    integer_buffer* cpus_count = integer_buffer_create(cpus_count_buffer_capacity);
 
     /*
     * Creating watchdog_boxes. Every thread must inform watchdog thread abouts its activity. 
-    * To inform watchdog about thread activity, every thread must execute watchdog_box_click(watchdog_box) at least every 2 seconds.
+    * To inform watchdog threat about its activity, every thread must execute watchdog_box_click(watchdog_box) at least every 2 seconds.
     */
     watchdog_box* reader_box = watchdog_box_create();
     watchdog_box* analyzer_box = watchdog_box_create();
@@ -53,8 +59,8 @@ int main() {
     /*
     * Creating threads. 
     */
-    reader* reader_object = reader_create(reader_analyzer_buffer, logger_buffer, reader_box);
-    analyzer* analyzer_objet = analyzer_create(reader_analyzer_buffer, logger_buffer, analyzer_printer_buffer, analyzer_box);
+    reader* reader_object = reader_create(reader_analyzer_buffer, logger_buffer, reader_box, cpus_count);
+    analyzer* analyzer_objet = analyzer_create(reader_analyzer_buffer, logger_buffer, analyzer_printer_buffer, analyzer_box, cpus_count);
     printer* printer_object = printer_create(analyzer_printer_buffer, logger_buffer, printer_box);
     logger* logger_object = logger_create(logger_buffer, logger_box, "logger file");    
     watchdog* watchdog_object = watchdog_create(boxes_length, boxes);
@@ -65,7 +71,7 @@ int main() {
     watchdog_join(watchdog_object);
     
     /*
-    * The next thread to terminate is reader. Reader sends information about termination to analyzer thread by buffer. 
+    * The next thread to terminate is reader. Reader sends information about termination to analyzer thread by "reader_analyzer_buffer" 
     * Analyzer thread does the same for printer thread and printer thread informs logger thread.
     */
     reader_send_exit_signal(reader_object);
@@ -87,6 +93,7 @@ int main() {
     string_buffer_destroy(reader_analyzer_buffer);
     string_buffer_destroy(logger_buffer);
     integer_buffer_destroy(analyzer_printer_buffer);
+    integer_buffer_destroy(cpus_count);
 
     watchdog_box_destroy(reader_box);
     watchdog_box_destroy(analyzer_box);

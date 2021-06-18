@@ -23,9 +23,8 @@ struct printer {
 * Body of printer thread. Printer thread reads data from analyzer_buffer and prints them on screen.
 * Like Reader thread, printer thread also informs watchdog thread about itself activity and sends logs info to logger thread.
 */
-void* thread_printer(void* args);
 
-void* thread_printer(void* args) {
+static void* thread_printer(void* args) {
     printer* printer_object = (printer*) args;
 
     integer_buffer* analyzer_buffer = printer_object->analyzer_buffer;
@@ -45,6 +44,7 @@ void* thread_printer(void* args) {
         int cpu_usage = integer_buffer_read(analyzer_buffer);
 
         // if cpu_usage equals -1, it means that the analyzer thread finished its work and printer must to exit.
+        // zamien -1 na exit_value_int i podobnie z "exit"
         if (cpu_usage == -1) {
             printf("printer exit\n");
             

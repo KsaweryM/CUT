@@ -1,10 +1,12 @@
 #include "watchdog-box.h"
 #include <pthread.h>
 #include <stdlib.h>
+#include <stdatomic.h>
 
 struct watchdog_box {
     pthread_mutex_t mutex;
-    volatile int click;  
+    char padding[4];
+    int click;  
 };
 
 watchdog_box* watchdog_box_create() {
@@ -29,7 +31,7 @@ int watchdog_box_check_click(watchdog_box* box) {
     int click;
 
     pthread_mutex_lock(&box->mutex);
-
+    // fetch and exchange
     click = box->click;
     box->click = 0;
 

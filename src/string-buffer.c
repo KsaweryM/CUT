@@ -46,30 +46,41 @@ size_t string_buffer_write(string_buffer* buffer, const char data[]) {
     pthread_mutex_lock(&buffer->mutex);
 
     size_t string_size = strlen(data) + 1;
-    size_t size = (string_size < buffer->word_length) ? string_size : buffer->word_length;
+    
+    if (string_size > buffer->word_length) {
+        sem_post(&buffer->empty);
+        pthread_mutex_unlock(&buffer->mutex);
 
-    memcpy(&buffer->buffer[buffer->tail * buffer->word_length], data, size);
+        return 0;
+    }
+
+    memcpy(&buffer->buffer[buffer->tail * buffer->word_length], data, string_size);
     buffer->tail = (buffer->tail + 1) % buffer->words_count;
 
     pthread_mutex_unlock(&buffer->mutex);
     sem_post(&buffer->full);
 
-    return size;
+    return string_size;
 }
 
 size_t string_buffer_read(string_buffer* buffer, char* data, size_t available_space) {
     sem_wait(&buffer->full);
     pthread_mutex_lock(&buffer->mutex);
 
-    size_t string_size = buffer->word_length;
-    size_t size = (available_space < string_size) ? available_space : string_size; 
+    size_t string_size = strlen(&buffer->buffer[buffer->head * buffer->word_length]) + 1;
 
-    memcpy(data, &buffer->buffer[buffer->head * buffer->word_length], size);
+    if (string_size > available_space) {
+        sem_post(&buffer->full);
+        pthread_mutex_unlock(&buffer->mutex);
+        return 0;
+    }
+
+    memcpy(data, &buffer->buffer[buffer->head * buffer->word_length], string_size);
 
     buffer->head = (buffer->head + 1) % buffer->words_count;
 
     pthread_mutex_unlock(&buffer->mutex);
     sem_post(&buffer->empty);
 
-    return size;
+    return string_size;
 }

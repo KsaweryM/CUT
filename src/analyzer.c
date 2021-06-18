@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "macros.h"
+
 
 typedef struct cpu_data {
     unsigned long long int user_time, nice_time, system_time, idle_time;
@@ -17,64 +19,65 @@ struct analyzer {
     string_buffer* logger_buffer;
     
     watchdog_box* box;
+
+    integer_buffer* cpus_count;
     
     pthread_t id;
 };
 
-void* analyzer_thread(void* args);
-
-void* analyzer_thread(void* args) {
+static void* analyzer_thread(void* args) {
     analyzer* analyzer_object = (analyzer*) args;
 
     string_buffer* input = analyzer_object->input;
     integer_buffer* output = analyzer_object->output;
     string_buffer* logger_buffer = analyzer_object->logger_buffer;
     watchdog_box* box = analyzer_object->box;
+    integer_buffer* cpus_count = analyzer_object->cpus_count;
 
-    register const int data_max_length = 256;
+    char data[DATA_LENGTH];
 
-    char data[data_max_length];
+    string_buffer_read(input, data, DATA_LENGTH);
 
-    string_buffer_read(input, data, data_max_length);
+    register const int cpus_integer = integer_buffer_read(cpus_count);
+    integer_buffer_write(output, cpus_integer);
+    register const size_t cpus = (size_t) cpus_integer;
 
-    int cpus = atoi(data);
-    integer_buffer_write(output, cpus);
+    cpu_data* cpus_current_data = malloc(sizeof(*cpus_current_data) * cpus);
+    cpu_data* cpus_previous_data = malloc(sizeof(*cpus_previous_data) * cpus);
 
-    cpu_data cpus_current_data[cpus];
-    cpu_data cpus_previous_data[cpus];
+    string_buffer_write(logger_buffer, "first loop by analyzer\n");
 
-    int first_loop = 1;
+    watchdog_box_click(box); 
 
+    for (size_t i = 0; i < cpus; i++) {
+        string_buffer_read(input, data, DATA_LENGTH);
+
+        if (!strcmp(data, STRING_BUFFER_EXIT)) {
+            printf("Analyzer end");
+            integer_buffer_write(output, INTEGER_BUFFER_EXIT);
+
+            free(cpus_previous_data);
+            free(cpus_current_data);
+
+            return 0;
+
+        }
+
+        sscanf(data, "cpu%*d %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu", &cpus_previous_data[i].user_time, &cpus_previous_data[i].nice_time, &cpus_previous_data[i].system_time, &cpus_previous_data[i].idle_time, &cpus_previous_data[i].io_wait, &cpus_previous_data[i].irq, &cpus_previous_data[i].soft_irq, &cpus_previous_data[i].steal, &cpus_previous_data[i].guest, &cpus_previous_data[i].guest_nice);
+    }
+   
     while (1) {
         watchdog_box_click(box);
 
-        if (first_loop) {
-            string_buffer_write(logger_buffer, "first loop by analyzer\n");
-            for (int i = 0; i < cpus; i++) {
-                string_buffer_read(input, data, data_max_length);
+        for (size_t i = 0; i < cpus; i++) {
+            string_buffer_read(input, data, DATA_LENGTH);
 
-                if (i == 0 && !strcmp(data, "exit")) {
-                    printf("Analyzer end");
-                    integer_buffer_write(output, -1);
-
-                    return 0;
-
-                }
-
-                sscanf(data, "cpu%*d %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu", &cpus_previous_data[i].user_time, &cpus_previous_data[i].nice_time, &cpus_previous_data[i].system_time, &cpus_previous_data[i].idle_time, &cpus_previous_data[i].io_wait, &cpus_previous_data[i].irq, &cpus_previous_data[i].soft_irq, &cpus_previous_data[i].steal, &cpus_previous_data[i].guest, &cpus_previous_data[i].guest_nice);
-            }
-
-            first_loop = 0;
-
-            watchdog_box_click(box);
-        }
-
-        for (int i = 0; i < cpus; i++) {
-            string_buffer_read(input, data, data_max_length);
-
-            if (i == 0 && !strcmp(data, "exit")) {
+            if (i == 0 && !strcmp(data, STRING_BUFFER_EXIT)) {
                  printf("Analyzer exit\n");
-                 integer_buffer_write(output, -1);
+                 integer_buffer_write(output, INTEGER_BUFFER_EXIT);
+
+                 free(cpus_previous_data);
+                 free(cpus_current_data);
 
                  return 0;
             }
@@ -82,11 +85,7 @@ void* analyzer_thread(void* args) {
             sscanf(data, "cpu%*d %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu", &cpus_current_data[i].user_time, &cpus_current_data[i].nice_time, &cpus_current_data[i].system_time, &cpus_current_data[i].idle_time, &cpus_current_data[i].io_wait, &cpus_current_data[i].irq, &cpus_current_data[i].soft_irq, &cpus_current_data[i].steal, &cpus_current_data[i].guest, &cpus_current_data[i].guest_nice);
         }
 
-        if (!memcmp(cpus_previous_data, cpus_current_data, sizeof(*cpus_previous_data) * (size_t) cpus)) {
-            continue;
-        }
-
-        for (int i = 0; i < cpus; i++) {
+        for (size_t i = 0; i < cpus; i++) {
             unsigned long long int Prev_idle = cpus_previous_data[i].idle_time + cpus_previous_data[i].io_wait;
             unsigned long long int Idle = cpus_current_data[i].idle_time + cpus_current_data[i].io_wait;
 
@@ -99,9 +98,10 @@ void* analyzer_thread(void* args) {
             unsigned long long int total_d = Total - Prev_total;
             unsigned long long int idle_d  = Idle - Prev_idle;
 
-            double CPU_Percentage = (total_d == 0) ? 0 : (double) (total_d - idle_d) / (double) total_d;
+       
+            int CPU_Percentage = (total_d == 0) ? 0 : (int) (100 * (total_d - idle_d) /  total_d);
 
-            integer_buffer_write(output, (int) (CPU_Percentage * 100));
+            integer_buffer_write(output, CPU_Percentage);
             string_buffer_write(analyzer_object->logger_buffer, "New CPU usage calculated");
         }
 
@@ -109,13 +109,14 @@ void* analyzer_thread(void* args) {
     }
 }
 
-analyzer* analyzer_create(string_buffer* restrict reader_buffer, string_buffer* restrict logger_buffer, integer_buffer* printer_buffer,  watchdog_box* box) {
+analyzer* analyzer_create(string_buffer* restrict reader_buffer, string_buffer* restrict logger_buffer, integer_buffer* printer_buffer,  watchdog_box* box, integer_buffer* cpus_count) {
     analyzer* analyzer_object = malloc(sizeof(*analyzer_object));
 
     analyzer_object->input = reader_buffer;
     analyzer_object->logger_buffer = logger_buffer;
     analyzer_object->output = printer_buffer;
     analyzer_object->box = box;
+    analyzer_object->cpus_count = cpus_count;
 
     pthread_create(&analyzer_object->id, NULL, &analyzer_thread, analyzer_object);
     return analyzer_object;
