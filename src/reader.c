@@ -15,7 +15,6 @@ struct reader {
     char padding[4];
     // Set exit value to 1 to exit reader threat. To set this value use "reader_send_exit_signal" method.
     volatile atomic_int exit;
-    
     // Buffer for communication with the analyzer thread.
     string_buffer* analyzer_buffer;
     // Buffer for communication with the logger thread.
@@ -59,7 +58,7 @@ static void *thread_reader(void * args) {
 
     // Reader thread is working until another thread ask it to stop. 
     // This can be done by executing "reader_send_exit_signal" method on right reader object.
-    while (!reader_object->exit) {
+    while (!atomic_load(&reader_object->exit)) {
         // Reader thread sends information to logger thread what it is doing
         string_buffer_write(logger_buffer, "Reader reads the file");
       
@@ -87,6 +86,7 @@ static void *thread_reader(void * args) {
 
     // Reader thread is goint to finish its work. It must to informs analyzer thread to does the same.
     string_buffer_write(reader_object->analyzer_buffer, STRING_BUFFER_EXIT);
+
     
     return 0;
 }
@@ -95,7 +95,7 @@ reader* reader_create(string_buffer* restrict analyzer_buffer, string_buffer* re
     reader* reader_object = malloc(sizeof(*reader_object));
     assert(reader_object);
 
-    reader_object->exit = 0;
+    atomic_store(&reader_object->exit, 0);
     reader_object->id = 0;
     reader_object->analyzer_buffer = analyzer_buffer;
     reader_object->logger_buffer = logger_buffer;
@@ -108,7 +108,7 @@ reader* reader_create(string_buffer* restrict analyzer_buffer, string_buffer* re
 }
 
 void reader_send_exit_signal(reader* reader_object) {
-    reader_object->exit = 1;
+    atomic_store(&reader_object->exit, 1);
 }
 
 void reader_join(reader* reader_object) {
