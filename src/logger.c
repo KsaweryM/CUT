@@ -39,6 +39,14 @@ static void* thread_logger(void* args) {
     // file to which logger thread saves data.
     FILE* file = fopen(logger_object->file_name, "w+");
 
+    if (!file) {
+        exit(EXIT_FAILURE);
+    }
+
+    if (!file) {
+        exit(EXIT_FAILURE);
+    }
+
     while (1) {
         // Logger thread informs watchdog thread about its activity.
         watchdog_box_click(box);
@@ -63,6 +71,10 @@ static void* thread_logger(void* args) {
 logger* logger_create(string_buffer* input, watchdog_box* box, const char file_name[]) {
     size_t file_name_length = strlen(file_name) + 1;
     logger* logger_object = malloc(sizeof(*logger_object) + file_name_length);
+
+    if (!logger_object) {
+        exit(EXIT_FAILURE);
+    }
 
     logger_object->input = input;
     logger_object->box = box;

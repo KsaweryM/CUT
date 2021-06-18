@@ -7,9 +7,9 @@
 * struct printer contains the most important data of printer thread.
 */
 struct printer {
-    // Buffor for communication with the analyzer thread. 
+    // Buffer for communication with the analyzer thread. 
     integer_buffer* analyzer_buffer;
-    // Boffor for communication with the logger thread.
+    // Boffer for communication with the logger thread.
     string_buffer* logger_buffer;
 
     // Printer thread uses watchdog_box object to informs watchdog thread about itself activity.
@@ -61,6 +61,11 @@ static void* thread_printer(void* args) {
 
 printer* printer_create(integer_buffer* analyzer_buffer, string_buffer* logger_buffer, watchdog_box* box) {
     printer* printer_object = malloc(sizeof(*printer_object));
+
+    if (!printer_object) {
+        exit(EXIT_FAILURE);
+    }
+    
     printer_object->analyzer_buffer = analyzer_buffer;
     printer_object->logger_buffer = logger_buffer;
     printer_object->box = box;

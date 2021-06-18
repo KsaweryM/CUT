@@ -19,6 +19,10 @@ struct string_buffer {
 string_buffer* string_buffer_create(const size_t words_count, const size_t word_length) {
     string_buffer* buffer = malloc(sizeof(*buffer) + words_count * word_length);
 
+    if (!buffer) {
+        exit(EXIT_FAILURE);
+    }
+
     pthread_mutex_init(&buffer->mutex, NULL);
 
     sem_init(&buffer->empty, 0, (unsigned int) words_count);

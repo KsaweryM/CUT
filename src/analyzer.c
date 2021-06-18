@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include "macros.h"
 
-
 typedef struct cpu_data {
     unsigned long long int user_time, nice_time, system_time, idle_time;
     unsigned long long int io_wait, irq, soft_irq, steal, guest, guest_nice;
@@ -39,8 +38,9 @@ static void* analyzer_thread(void* args) {
     string_buffer_read(input, data, DATA_LENGTH);
 
     register const int cpus_integer = integer_buffer_read(cpus_count);
-    integer_buffer_write(output, cpus_integer);
     register const size_t cpus = (size_t) cpus_integer;
+
+    integer_buffer_write(output, cpus_integer);
 
     cpu_data* cpus_current_data = malloc(sizeof(*cpus_current_data) * cpus);
     cpu_data* cpus_previous_data = malloc(sizeof(*cpus_previous_data) * cpus);
@@ -72,7 +72,6 @@ static void* analyzer_thread(void* args) {
             string_buffer_read(input, data, DATA_LENGTH);
 
             if (i == 0 && !strcmp(data, STRING_BUFFER_EXIT)) {
-                 printf("Analyzer exit\n");
                  integer_buffer_write(output, INTEGER_BUFFER_EXIT);
 
                  free(cpus_previous_data);
@@ -110,6 +109,10 @@ static void* analyzer_thread(void* args) {
 
 analyzer* analyzer_create(string_buffer* restrict reader_buffer, string_buffer* restrict logger_buffer, integer_buffer* printer_buffer,  watchdog_box* box, integer_buffer* cpus_count) {
     analyzer* analyzer_object = malloc(sizeof(*analyzer_object));
+
+    if (!analyzer_object) {
+        exit(EXIT_FAILURE);
+    }
 
     analyzer_object->input = reader_buffer;
     analyzer_object->logger_buffer = logger_buffer;

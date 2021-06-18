@@ -39,6 +39,10 @@ static void* thread_watchdog(void* args) {
 watchdog* watchdog_create(size_t box_length, watchdog_box* boxes[]) {
     watchdog* watchdog_object = malloc(sizeof(*watchdog_object) + sizeof(watchdog_box*) * box_length);
 
+    if (!watchdog_object) {
+        exit(EXIT_FAILURE);
+    }
+
     watchdog_object->boxes = boxes;
     watchdog_object->box_length = box_length;
     

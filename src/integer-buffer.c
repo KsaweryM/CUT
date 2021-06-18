@@ -17,6 +17,10 @@ struct integer_buffer {
 integer_buffer* integer_buffer_create(size_t length) {
     integer_buffer* buffer = malloc(sizeof(*buffer) + sizeof(*buffer->buffer) * length);
 
+    if (!buffer) {
+        exit(EXIT_FAILURE);
+    }
+
     pthread_mutex_init(&buffer->mutex, NULL);
 
     sem_init(&buffer->empty, 0, (unsigned int) length);

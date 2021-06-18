@@ -12,6 +12,10 @@ struct watchdog_box {
 watchdog_box* watchdog_box_create() {
     watchdog_box* box = malloc(sizeof(*box));
 
+    if (!box) {
+        exit(EXIT_FAILURE);
+    }
+
     pthread_mutex_init(&box->mutex, NULL);
 
     box->click = 0;

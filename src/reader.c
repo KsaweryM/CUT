@@ -13,7 +13,6 @@
 */
 static size_t cpu_count(void);
 
-
 /*
 * struct reader contains the most important data of reader thread.
 */
@@ -82,7 +81,7 @@ static void *thread_reader(void * args) {
         // Reader thread informs watchdog thread about its activity.
         watchdog_box_click(box);
         
-        sleep(1);
+        usleep(READER_SLEEP_PERIOD_IN_NANOSECONDS);
     }
 
     // Reader thread is goint to finish its work. It must to informs analyzer thread to does the same.
