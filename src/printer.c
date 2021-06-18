@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "macros.h"
 
 /*
 * struct printer contains the most important data of printer thread.
@@ -51,7 +52,7 @@ static void* thread_printer(void* args) {
         }
 
         // Printer thread sends information to logger thread what is is doing.
-        string_buffer_write(logger_buffer, "New value is printed\n");
+        string_buffer_write(logger_buffer, PRINTER_LOG_MESSAGE_1);
         // Printer thread prints cpu usage on screen.
         printf("cpu%d usage is %d\n", cpu_number, cpu_usage);
 
@@ -65,7 +66,7 @@ printer* printer_create(integer_buffer* analyzer_buffer, string_buffer* logger_b
     if (!printer_object) {
         exit(EXIT_FAILURE);
     }
-    
+
     printer_object->analyzer_buffer = analyzer_buffer;
     printer_object->logger_buffer = logger_buffer;
     printer_object->box = box;

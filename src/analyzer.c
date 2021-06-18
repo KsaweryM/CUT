@@ -45,7 +45,7 @@ static void* analyzer_thread(void* args) {
     cpu_data* cpus_current_data = malloc(sizeof(*cpus_current_data) * cpus);
     cpu_data* cpus_previous_data = malloc(sizeof(*cpus_previous_data) * cpus);
 
-    string_buffer_write(logger_buffer, "first loop by analyzer\n");
+    string_buffer_write(logger_buffer, ANALYZER_LOG_MESSAGE_1);
 
     watchdog_box_click(box); 
 
@@ -99,8 +99,8 @@ static void* analyzer_thread(void* args) {
        
             int CPU_Percentage = (total_d == 0) ? 0 : (int) (100 * (total_d - idle_d) /  total_d);
 
+            string_buffer_write(analyzer_object->logger_buffer, ANALYZER_LOG_MESSAGE_2);
             integer_buffer_write(output, CPU_Percentage);
-            string_buffer_write(analyzer_object->logger_buffer, "New CPU usage calculated");
         }
 
         memcpy(cpus_previous_data, cpus_current_data, sizeof(*cpus_previous_data) * (size_t) cpus);

@@ -13,6 +13,7 @@
 #include "printer.h"
 #include <unistd.h>
 #include "signal-handler.h"
+#include "macros.h"
 
 /*
 * When the program receives the SIGTERM signal, it starts to terminates threads.
@@ -65,7 +66,7 @@ int main() {
     reader* reader_object = reader_create(reader_analyzer_buffer, logger_buffer, reader_box, cpus_count);
     analyzer* analyzer_objet = analyzer_create(reader_analyzer_buffer, logger_buffer, analyzer_printer_buffer, analyzer_box, cpus_count);
     printer* printer_object = printer_create(analyzer_printer_buffer, logger_buffer, printer_box);
-    logger* logger_object = logger_create(logger_buffer, logger_box, "logger file");    
+    logger* logger_object = logger_create(logger_buffer, logger_box, LOGGER_FILE_NAME);    
     watchdog* watchdog_object = watchdog_create(boxes_length, boxes);
 
     /*

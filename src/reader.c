@@ -59,7 +59,7 @@ static void *thread_reader(void * args) {
     // This can be done by executing "reader_send_exit_signal" method on right reader object.
     while (!atomic_load(&reader_object->exit)) {
         // Reader thread sends information to logger thread what it is doing
-        string_buffer_write(logger_buffer, "Reader reads the file");
+        string_buffer_write(logger_buffer, READER_LOG_MESSAGE_1);
       
         // Reader thread opens /proc/stat file and avoids first line. 
         FILE *file = fopen("/proc/stat", "r");
