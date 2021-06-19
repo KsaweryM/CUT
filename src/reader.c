@@ -14,7 +14,7 @@
 static size_t cpu_count(void);
 
 /*
-* struct reader contains the most important data of reader thread.
+* Struct reader contains the most important data of reader thread.
 */
 struct reader {
     char padding[4];
@@ -26,10 +26,8 @@ struct reader {
     string_buffer* logger_buffer;
     // Reader thread uses this buffer to tell the analyzer threaed how many CPU are. 
     integer_buffer* cpus_count;
-
     // Reader thread uses watchdog_box object to informs watchdog thread about itself activity. 
     watchdog_box* box;
-    
     // Id of reader thread.
     pthread_t id;
 };
@@ -58,7 +56,7 @@ static void *thread_reader(void * args) {
     // Reader thread is working until another thread ask it to stop. 
     // This can be done by executing "reader_send_exit_signal" method on right reader object.
     while (!atomic_load(&reader_object->exit)) {
-        // Reader thread sends information to logger thread what it is doing
+        // Reader thread sends information to logger thread what it is doing.
         string_buffer_write(logger_buffer, READER_LOG_MESSAGE_1);
       
         // Reader thread opens /proc/stat file and avoids first line. 

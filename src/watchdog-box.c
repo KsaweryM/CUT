@@ -1,5 +1,4 @@
 #include "watchdog-box.h"
-#include <pthread.h>
 #include <stdlib.h>
 #include <stdatomic.h>
 

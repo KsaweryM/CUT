@@ -24,7 +24,6 @@ struct printer {
 * Body of printer thread. Printer thread reads data from analyzer_buffer and prints them on screen.
 * Like Reader thread, printer thread also informs watchdog thread about itself activity and sends logs info to logger thread.
 */
-
 static void* thread_printer(void* args) {
     printer* printer_object = (printer*) args;
 
@@ -54,7 +53,7 @@ static void* thread_printer(void* args) {
         // Printer thread sends information to logger thread what is is doing.
         string_buffer_write(logger_buffer, PRINTER_LOG_MESSAGE_1);
         // Printer thread prints cpu usage on screen.
-        printf("cpu%d usage is %d\n", cpu_number, cpu_usage);
+        printf("cpu%d usage is %d %%\n", cpu_number, cpu_usage);
 
         cpu_number = (cpu_number + 1) % cpus;
     }       
