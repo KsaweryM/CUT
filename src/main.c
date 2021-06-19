@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdatomic.h>
 #include <string.h>
-#include <pthread.h>
 #include "reader.h"
 #include "watchdog.h"
 #include "watchdog-box.h"
@@ -11,7 +10,6 @@
 #include "logger.h"
 #include "analyzer.h"
 #include "printer.h"
-#include <unistd.h>
 #include "signal-handler.h"
 #include "macros.h"
 

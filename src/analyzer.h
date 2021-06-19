@@ -6,9 +6,8 @@
 #include "watchdog-box.h"
 
 /*
-* Analyzer is a thread that reads data from reader_buffer and processes it. 
-* Analyzer thread calculates the CPU usages basen on these data and sends them to printer thread by printer_buffer.
-*
+* Body of the analyzer thread. Analyzer is a thread that reads data from reader thread and processes it. 
+* Analyzer thread calculates the CPU usages basen on these data and sends them to printer thread.
 */
 typedef struct analyzer analyzer;
 
@@ -17,6 +16,5 @@ analyzer* analyzer_create(string_buffer* restrict reader_buffer, string_buffer* 
 void analyzer_destroy(analyzer* analyzer_object);
 
 void analyzer_join(analyzer* analyzer_object);
-
 
 #endif 

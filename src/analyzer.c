@@ -125,7 +125,7 @@ static void* analyzer_thread(void* args) {
             integer_buffer_write(output, CPU_Percentage);
         }
 
-        memcpy(cpus_previous_data, cpus_current_data, sizeof(*cpus_previous_data) * (size_t) cpus);
+        memcpy(cpus_previous_data, cpus_current_data, sizeof(*cpus_previous_data) * cpus);
     }
 }
 

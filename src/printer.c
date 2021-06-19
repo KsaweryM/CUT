@@ -12,10 +12,8 @@ struct printer {
     integer_buffer* analyzer_buffer;
     // Boffer for communication with the logger thread.
     string_buffer* logger_buffer;
-
     // Printer thread uses watchdog_box object to informs watchdog thread about itself activity.
     watchdog_box* box; 
-
     // id of printer thread.
     pthread_t id;
 };
@@ -44,9 +42,9 @@ static void* thread_printer(void* args) {
         int cpu_usage = integer_buffer_read(analyzer_buffer);
 
         // if cpu_usage equals -1, it means that the analyzer thread finished its work and printer must to exit.
-        if (cpu_usage == -1) {      
+        if (cpu_usage == INTEGER_BUFFER_EXIT) {      
             // Printer threads asks logger thread to exit.
-            string_buffer_write(logger_buffer, "exit");
+            string_buffer_write(logger_buffer, STRING_BUFFER_EXIT);
             return 0;
         }
 

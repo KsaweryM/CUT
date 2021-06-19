@@ -12,13 +12,10 @@
 struct logger {
     // Logger thread reads string from this string_buffer and saves them to file.
     string_buffer* input;
-
     // Logger thread uses watchdog_box object to informs watchdog thread about itself activity. 
     watchdog_box* box;
-
     // Id of logger thread.
     pthread_t id;
-
     // Name of the file to which logger thread saves data.
     char file_name[];
 };
@@ -27,7 +24,6 @@ struct logger {
 * Body of the logger thread. Logger thread reads strings from input_buffer and saves them to file.
 * Like Reader thread, logger thread also informs watchdog thread about itself activity.
 */
-
 static void* thread_logger(void* args) {
     logger* logger_object = (logger*) args;
 
