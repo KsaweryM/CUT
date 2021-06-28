@@ -39,10 +39,6 @@ static void* thread_logger(void* args) {
         exit(EXIT_FAILURE);
     }
 
-    if (!file) {
-        exit(EXIT_FAILURE);
-    }
-
     while (1) {
         // Logger thread informs watchdog thread about its activity.
         watchdog_box_click(box);
